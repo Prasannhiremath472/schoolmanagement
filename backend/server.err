@@ -1,0 +1,23 @@
+D:\schoolmanagement\backend\node_modules\firebase-admin\lib\app\credential-internal.js:153
+            throw new error_1.FirebaseAppError(error_1.AppErrorCodes.INVALID_CREDENTIAL, 'Failed to parse private key: ' + error);
+                  ^
+
+FirebaseAppError: Failed to parse private key: Error: Invalid PEM formatted message.
+    at new ServiceAccount (D:\schoolmanagement\backend\node_modules\firebase-admin\lib\app\credential-internal.js:153:19)
+    at new ServiceAccountCredential (D:\schoolmanagement\backend\node_modules\firebase-admin\lib\app\credential-internal.js:70:15)
+    at Object.cert (D:\schoolmanagement\backend\node_modules\firebase-admin\lib\app\credential-factory.js:103:54)
+    at NotificationService.initFirebase (D:\schoolmanagement\backend\dist\modules\notification\notification.service.js:40:46)
+    at NotificationService.onModuleInit (D:\schoolmanagement\backend\dist\modules\notification\notification.service.js:27:14)
+    at MapIterator.iteratee (D:\schoolmanagement\backend\node_modules\@nestjs\core\hooks\on-module-init.hook.js:22:43)
+    at MapIterator.next (D:\schoolmanagement\backend\node_modules\iterare\lib\map.js:13:39)
+    at IteratorWithOperators.next (D:\schoolmanagement\backend\node_modules\iterare\lib\iterate.js:21:28)
+    at Function.from (<anonymous>)
+    at IteratorWithOperators.toArray (D:\schoolmanagement\backend\node_modules\iterare\lib\iterate.js:180:22) {
+  errorInfo: {
+    code: 'app/invalid-credential',
+    message: 'Failed to parse private key: Error: Invalid PEM formatted message.'
+  },
+  codePrefix: 'app'
+}
+
+Node.js v22.16.0

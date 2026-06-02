@@ -1,0 +1,18 @@
+import React, { useState } from 'react';
+import { Box, Card, CardContent, Typography, Tab, Tabs, TextField, Button, Grid, Switch, FormControlLabel } from '@mui/material';
+import { Save } from '@mui/icons-material';
+
+export default function SettingsPage() {
+  const [tab, setTab] = useState(0);
+  return (
+    <Box>
+      <Typography variant="h5" fontWeight={700} mb={3}>Settings</Typography>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}><Tabs value={tab} onChange={(_, v) => setTab(v)}><Tab label="General" /><Tab label="Email (SMTP)" /><Tab label="SMS" /><Tab label="Payment Gateway" /><Tab label="Storage" /></Tabs></Box>
+      {tab === 0 && <Card><CardContent><Typography variant="h6" fontWeight={600} mb={2}>School Information</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="School Name" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Email" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Phone" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Website" fullWidth size="small" /></Grid><Grid item xs={12}><TextField label="Address" fullWidth size="small" multiline rows={2} /></Grid></Grid><Box mt={2}><Button variant="contained" startIcon={<Save />}>Save Changes</Button></Box></CardContent></Card>}
+      {tab === 1 && <Card><CardContent><Typography variant="h6" fontWeight={600} mb={2}>SMTP Configuration</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="SMTP Host" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="SMTP Port" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Username" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Password" type="password" fullWidth size="small" /></Grid><Grid item xs={12}><TextField label="From Email" fullWidth size="small" /></Grid></Grid><Box mt={2}><Button variant="contained" startIcon={<Save />}>Save SMTP</Button></Box></CardContent></Card>}
+      {tab === 2 && <Card><CardContent><Typography variant="h6" fontWeight={600} mb={2}>SMS Configuration</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="SMS Provider" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="API Key" fullWidth size="small" /></Grid></Grid><Box mt={2}><Button variant="contained" startIcon={<Save />}>Save SMS Settings</Button></Box></CardContent></Card>}
+      {tab === 3 && <Card><CardContent><Typography variant="h6" fontWeight={600} mb={2}>Payment Gateway</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="Razorpay Key ID" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Razorpay Key Secret" type="password" fullWidth size="small" /></Grid></Grid><Box mt={2}><Button variant="contained" startIcon={<Save />}>Save</Button></Box></CardContent></Card>}
+      {tab === 4 && <Card><CardContent><Typography variant="h6" fontWeight={600} mb={2}>Storage Configuration</Typography><Grid container spacing={2}><Grid item xs={12} sm={6}><TextField label="S3 Bucket" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="S3 Region" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Access Key" fullWidth size="small" /></Grid><Grid item xs={12} sm={6}><TextField label="Secret Key" type="password" fullWidth size="small" /></Grid></Grid><Box mt={2}><Button variant="contained" startIcon={<Save />}>Save Storage</Button></Box></CardContent></Card>}
+    </Box>
+  );
+}

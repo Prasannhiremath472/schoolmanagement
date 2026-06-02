@@ -1,0 +1,120 @@
+import { StaffService } from './staff.service';
+import { PaginationDto } from '../../common/dto/pagination.dto';
+export declare class StaffController {
+    private readonly staffService;
+    constructor(staffService: StaffService);
+    findAll(q: PaginationDto): Promise<{
+        data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            status: import("../../generated/school-client").$Enums.StaffStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            dateOfBirth: Date | null;
+            gender: import("../../generated/school-client").$Enums.Gender | null;
+            aadhaarNo: string | null;
+            photo: string | null;
+            employeeId: string;
+            joiningDate: Date;
+            designation: string;
+            department: string | null;
+            pan: string | null;
+            bankAccount: string | null;
+            bankName: string | null;
+            ifscCode: string | null;
+        }[];
+        meta: {
+            total: number;
+            page: number;
+            limit: number;
+            totalPages: number;
+            hasNext: boolean;
+            hasPrev: boolean;
+        };
+    }>;
+    findOne(id: string): Promise<{
+        data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            status: import("../../generated/school-client").$Enums.StaffStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            dateOfBirth: Date | null;
+            gender: import("../../generated/school-client").$Enums.Gender | null;
+            aadhaarNo: string | null;
+            photo: string | null;
+            employeeId: string;
+            joiningDate: Date;
+            designation: string;
+            department: string | null;
+            pan: string | null;
+            bankAccount: string | null;
+            bankName: string | null;
+            ifscCode: string | null;
+        };
+    }>;
+    create(dto: any): Promise<{
+        data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            status: import("../../generated/school-client").$Enums.StaffStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            dateOfBirth: Date | null;
+            gender: import("../../generated/school-client").$Enums.Gender | null;
+            aadhaarNo: string | null;
+            photo: string | null;
+            employeeId: string;
+            joiningDate: Date;
+            designation: string;
+            department: string | null;
+            pan: string | null;
+            bankAccount: string | null;
+            bankName: string | null;
+            ifscCode: string | null;
+        };
+        message: string;
+    }>;
+    update(id: string, dto: any): Promise<{
+        data: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            status: import("../../generated/school-client").$Enums.StaffStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            dateOfBirth: Date | null;
+            gender: import("../../generated/school-client").$Enums.Gender | null;
+            aadhaarNo: string | null;
+            photo: string | null;
+            employeeId: string;
+            joiningDate: Date;
+            designation: string;
+            department: string | null;
+            pan: string | null;
+            bankAccount: string | null;
+            bankName: string | null;
+            ifscCode: string | null;
+        };
+        message: string;
+    }>;
+}

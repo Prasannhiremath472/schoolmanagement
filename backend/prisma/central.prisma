@@ -1,0 +1,324 @@
+// Central Database Schema - Platform-level data
+// This database manages all schools, subscriptions, resellers, super admins
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/central-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CENTRAL_DATABASE_URL")
+}
+
+// ============================================================
+// SUPER ADMIN & PLATFORM USERS
+// ============================================================
+
+model PlatformUser {
+  id           String           @id @default(uuid())
+  email        String           @unique
+  password     String
+  name         String
+  role         PlatformRole     @default(ADMIN)
+  isActive     Boolean          @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  auditLogs    AuditLog[]
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@map("platform_users")
+}
+
+enum PlatformRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT
+  FINANCE
+  RESELLER
+}
+
+model RefreshToken {
+  id             String        @id @default(uuid())
+  token          String        @unique
+  platformUserId String?
+  platformUser   PlatformUser? @relation(fields: [platformUserId], references: [id], onDelete: Cascade)
+  expiresAt      DateTime
+  isRevoked      Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================================
+// SUBSCRIPTION PLANS
+// ============================================================
+
+model SubscriptionPlan {
+  id                String        @id @default(uuid())
+  name              String        @unique
+  slug              String        @unique
+  description       String?
+  price             Decimal       @db.Decimal(10, 2)
+  billingCycle      BillingCycle
+  trialDays         Int           @default(0)
+  maxStudents       Int           @default(-1) // -1 = unlimited
+  maxTeachers       Int           @default(-1)
+  maxStaff          Int           @default(-1)
+  storageGB         Int           @default(10)
+  features          Json          @default("{}")
+  isActive          Boolean       @default(true)
+  sortOrder         Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  subscriptions     Subscription[]
+
+  @@index([slug])
+  @@map("subscription_plans")
+}
+
+enum BillingCycle {
+  TRIAL
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  LIFETIME
+}
+
+// ============================================================
+// RESELLERS
+// ============================================================
+
+model Reseller {
+  id              String        @id @default(uuid())
+  name            String
+  email           String        @unique
+  phone           String?
+  company         String?
+  commissionPct   Decimal       @default(10) @db.Decimal(5, 2)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  schools         School[]
+  commissions     Commission[]
+
+  @@map("resellers")
+}
+
+model Commission {
+  id           String       @id @default(uuid())
+  resellerId   String
+  reseller     Reseller     @relation(fields: [resellerId], references: [id])
+  schoolId     String
+  school       School       @relation(fields: [schoolId], references: [id])
+  amount       Decimal      @db.Decimal(10, 2)
+  status       CommStatus   @default(PENDING)
+  paidAt       DateTime?
+  createdAt    DateTime     @default(now())
+
+  @@map("commissions")
+}
+
+enum CommStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+// ============================================================
+// SCHOOLS (TENANTS)
+// ============================================================
+
+model School {
+  id                String          @id @default(uuid())
+  name              String
+  slug              String          @unique  // used as subdomain & DB identifier
+  email             String          @unique
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  country           String          @default("India")
+  pincode           String?
+  website           String?
+  logo              String?
+  favicon           String?
+  primaryColor      String          @default("#1976d2")
+  secondaryColor    String          @default("#dc004e")
+  customDomain      String?         @unique
+  dbName            String          @unique  // school_{slug}_db
+  status            SchoolStatus    @default(TRIAL)
+  timezone          String          @default("Asia/Kolkata")
+  currency          String          @default("INR")
+  language          String          @default("en")
+  resellerId        String?
+  reseller          Reseller?       @relation(fields: [resellerId], references: [id])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  subscriptions     Subscription[]
+  commissions       Commission[]
+  usageMetrics      UsageMetric[]
+  schoolSettings    SchoolSetting?
+
+  @@index([slug])
+  @@index([customDomain])
+  @@index([status])
+  @@map("schools")
+}
+
+enum SchoolStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+  EXPIRED
+  CANCELLED
+}
+
+model SchoolSetting {
+  id                   String    @id @default(uuid())
+  schoolId             String    @unique
+  school               School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  smtpHost             String?
+  smtpPort             Int?
+  smtpUser             String?
+  smtpPass             String?
+  smtpFrom             String?
+  smsProvider          String?
+  smsApiKey            String?
+  whatsappApiKey       String?
+  razorpayKeyId        String?
+  razorpayKeySecret    String?
+  stripePubKey         String?
+  stripeSecretKey      String?
+  s3Bucket             String?
+  s3Region             String?
+  s3AccessKey          String?
+  s3SecretKey          String?
+  zoomApiKey           String?
+  zoomApiSecret        String?
+  firebaseServerKey    String?
+  updatedAt            DateTime  @updatedAt
+
+  @@map("school_settings")
+}
+
+// ============================================================
+// SUBSCRIPTIONS
+// ============================================================
+
+model Subscription {
+  id               String           @id @default(uuid())
+  schoolId         String
+  school           School           @relation(fields: [schoolId], references: [id])
+  planId           String
+  plan             SubscriptionPlan @relation(fields: [planId], references: [id])
+  status           SubStatus        @default(ACTIVE)
+  startDate        DateTime
+  endDate          DateTime
+  amount           Decimal          @db.Decimal(10, 2)
+  discount         Decimal          @default(0) @db.Decimal(10, 2)
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  payments         Payment[]
+
+  @@index([schoolId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+enum SubStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  subscriptionId   String
+  subscription     Subscription  @relation(fields: [subscriptionId], references: [id])
+  amount           Decimal       @db.Decimal(10, 2)
+  currency         String        @default("INR")
+  gateway          String        // razorpay, stripe, manual
+  gatewayPayId     String?
+  status           PayStatus     @default(PENDING)
+  receiptUrl       String?
+  metadata         Json          @default("{}")
+  paidAt           DateTime?
+  createdAt        DateTime      @default(now())
+
+  @@index([subscriptionId])
+  @@map("payments")
+}
+
+enum PayStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+// ============================================================
+// USAGE METRICS
+// ============================================================
+
+model UsageMetric {
+  id           String    @id @default(uuid())
+  schoolId     String
+  school       School    @relation(fields: [schoolId], references: [id])
+  metricDate   DateTime  @db.Date
+  students     Int       @default(0)
+  teachers     Int       @default(0)
+  staff        Int       @default(0)
+  storageUsed  Decimal   @default(0) @db.Decimal(10, 3) // GB
+  apiCalls     Int       @default(0)
+  activeUsers  Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@unique([schoolId, metricDate])
+  @@index([schoolId])
+  @@map("usage_metrics")
+}
+
+// ============================================================
+// AUDIT LOGS
+// ============================================================
+
+model AuditLog {
+  id             String        @id @default(uuid())
+  platformUserId String?
+  platformUser   PlatformUser? @relation(fields: [platformUserId], references: [id])
+  action         String
+  entity         String
+  entityId       String?
+  oldValues      Json?
+  newValues      Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime      @default(now())
+
+  @@index([platformUserId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// SYSTEM SETTINGS (PLATFORM-LEVEL)
+// ============================================================
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  group     String   @default("general")
+  isSecret  Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@map("system_settings")
+}

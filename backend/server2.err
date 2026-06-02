@@ -1,0 +1,17 @@
+D:\schoolmanagement\backend\node_modules\twilio\lib\base\BaseTwilio.js:83
+                throw new Error("accountSid must start with AC" + apiKeyMsg);
+                      ^
+
+Error: accountSid must start with AC
+    at Twilio.setAccountSid (D:\schoolmanagement\backend\node_modules\twilio\lib\base\BaseTwilio.js:83:23)
+    at new Client (D:\schoolmanagement\backend\node_modules\twilio\lib\base\BaseTwilio.js:45:18)
+    at new Twilio (D:\schoolmanagement\backend\node_modules\twilio\lib\rest\Twilio.js:33:9)
+    at TwilioSDK (D:\schoolmanagement\backend\node_modules\twilio\lib\index.js:55:12)
+    at NotificationService.initTwilio (D:\schoolmanagement\backend\dist\modules\notification\notification.service.js:57:33)
+    at NotificationService.onModuleInit (D:\schoolmanagement\backend\dist\modules\notification\notification.service.js:28:14)
+    at MapIterator.iteratee (D:\schoolmanagement\backend\node_modules\@nestjs\core\hooks\on-module-init.hook.js:22:43)
+    at MapIterator.next (D:\schoolmanagement\backend\node_modules\iterare\lib\map.js:13:39)
+    at IteratorWithOperators.next (D:\schoolmanagement\backend\node_modules\iterare\lib\iterate.js:21:28)
+    at Function.from (<anonymous>)
+
+Node.js v22.16.0
